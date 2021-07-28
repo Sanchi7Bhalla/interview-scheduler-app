@@ -36,7 +36,7 @@ app.get('/', (request , response) => {
 
 // router configuration
 app.use('/api/interview' , require('./router/interview'));
-    app.use('/api/participant' , require('./router/participant'));
+app.use('/api/participant' , require('./router/participant'));
 
 app.listen(port, () => {
     console.log(`Express Server is Started at PORT : ${port}`);
