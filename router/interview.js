@@ -3,6 +3,8 @@ const router = express.Router();
 const Interview = require("../modals/interview")
 const moment = require("moment");
 const { request } = require('express');
+const interview = require('../modals/interview');
+const Participants = require ('../modals/participant.js');
 
 /*
     @usage : to create a interview
@@ -153,7 +155,7 @@ router.get('/',async (request,response)=>{
             let interviewObj = {};
             interviewObj.start=gmtStart;
             interviewObj.end=gmtEnd;
-            for(participant of participants){
+            for(const participant of participants){
                 interviewObj.participants.unshift(participant);
             }
             
@@ -174,5 +176,46 @@ router.get('/',async (request,response)=>{
     });
     
 
+
+    /*
+    @usage : interview details access
+    @url : /api/interview/:interview_id/:email_id
+    @fields : no fields
+    @method : GET
+    @access : PUBLIC
+ */
+
+    router.get('/:interview_id/:email_id', async (request, response) =>{
+        try{
+            let interviewId=request.params.interview_id;
+            // console.log(interviewId);
+            if(!interviewId){
+                return response.status(401).json({errors : [{msg : 'No interview Found'}]});
+            }
+            let interview = await Interview.findById(interviewId);
+            console.log(interview);
+            let emailId=request.params.email_id;
+            // console.log(emailId);
+            let participantId=Participants.findOne({ 'email': 'emailId' });
+            console.log(participantId);
+            for(const participantid of interview.participants){
+                if(participantid==participantId){
+                    return response.status(200).json({
+                        message : 'interview details access granted',
+                        interview : interview
+                    });
+                }
+            }
+            return response.status(201).json({
+                message : "interview details not granted"
+            });
+        }
+        catch (error) {
+            console.error(error);
+            response.status(500).json({errors : [{msg : error.message}]});
+        }
+        
+
+    });
 module.exports = router;
 
